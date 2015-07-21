@@ -1,0 +1,10 @@
+--- share/lua/5.1/alewrap/init.lua
++++ share/lua/5.1/alewrap/init.lua
+@@ -20,6 +20,7 @@ require 'paths'
+ 
+ paths.dofile('aleffi.lua')
+ paths.dofile('AleEnv.lua')
++paths.dofile('AleRemote.lua')
+ 
+ paths.dofile('AtariLayer.lua')
+ paths.dofile('GameScreen.lua')
