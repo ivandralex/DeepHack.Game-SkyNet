@@ -10,6 +10,13 @@ end
 
 local nql = torch.class('dqn.NeuralQLearner')
 
+local function sum(table)
+    local sum = 0
+    for k, v in pairs(table) do
+        sum = sum + v
+    end 
+    return sum
+end 
 
 function nql:__init(args)
     self.state_dim  = args.state_dim -- State dimensionality.
@@ -59,6 +66,12 @@ function nql:__init(args)
     self.histSpacing    = args.histSpacing or 1
     self.nonTermProb    = args.nonTermProb or 1
     self.bufferSize     = args.bufferSize or 512
+
+    -- a.kadurin epsilon greedy params
+    self.session_length = 0
+    self.session_history= {}
+    self.slength_avg = 0
+    -- a.kadurin epsilon greedy params
 
     self.transition_params = args.transition_params or {}
 
@@ -200,18 +213,12 @@ function nql:getQUpdate(args)
         target_q_net = self.network
     end
 
-    -- Compute max_a Q(s_2, a).
-    q2_max = target_q_net:forward(s2):float():max(2)
-
-    -- Compute q2 = (1-terminal) * gamma * max_a Q(s2, a)
-    q2 = q2_max:clone():mul(self.discount):cmul(term)
-
     delta = r:clone():float()
+
 
     if self.rescale_r then
         delta:div(self.r_max)
     end
-    delta:add(q2)
 
     -- q = Q(s,a)
     local q_all = self.network:forward(s):float()
@@ -220,6 +227,14 @@ function nql:getQUpdate(args)
         q[i] = q_all[i][a[i]]
     end
     delta:add(-1, q)
+
+    -- Compute max_a Q(s_2, a).
+    q2_max = target_q_net:forward(s2):float():max(2)
+
+    -- Compute q2 = (1-terminal) * gamma * max_a Q(s2, a)
+    q2 = q2_max:clone():mul(self.discount):cmul(term)
+
+    delta:add(q2)
 
     if self.clip_delta then
         delta[delta:ge(self.clip_delta)] = self.clip_delta
@@ -302,6 +317,19 @@ function nql:perceive(reward, rawstate, terminal, testing, testing_ep)
     local state = self:preprocess(rawstate):float()
     local curState
 
+    -- a.kadurin
+    if not terminal then
+        self.session_length = self.session_length + 1
+    else
+        table.insert(self.session_history, self.session_length)
+        local count_t = #self.session_history
+        local last_t = {table.unpack(self.session_history, math.max(1, count_t-10), count_t)}
+        self.slength_avg = sum(last_t) / math.min(10, count_t)
+        self.session_length = 0
+    end
+    -- a.kadurin
+
+
     if self.max_reward then
         reward = math.min(reward, self.max_reward)
     end
@@ -366,9 +394,11 @@ end
 
 
 function nql:eGreedy(state, testing_ep)
+    local ep_mul = math.log(1 + self.session_length/self.slength_avg, 2)
     self.ep = testing_ep or (self.ep_end +
                 math.max(0, (self.ep_start - self.ep_end) * (self.ep_endt -
-                math.max(0, self.numSteps - self.learn_start))/self.ep_endt))
+                math.max(0, self.numSteps - self.learn_start))/self.ep_endt)) * ep_mul
+
     -- Epsilon greedy
     if torch.uniform() < self.ep then
         return torch.random(1, self.n_actions)
