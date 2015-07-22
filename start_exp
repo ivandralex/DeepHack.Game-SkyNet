@@ -1,5 +1,8 @@
 #!/bin/bash
 
+git checkout $2
+git pull
+
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 ./run_gpu $1 $BRANCH > ../logs/$BRANCH-$1.log
