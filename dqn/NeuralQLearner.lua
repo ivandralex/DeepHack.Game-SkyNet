@@ -64,6 +64,10 @@ function nql:__init(args)
 
     self.network    = args.network or self:createNetwork()
 
+    -- a.kadurin --
+    self.session_reward = 0
+    -- a.kadurin --
+
     -- check whether there is a network file
     local network_function
     if not (type(self.network) == 'string') then
@@ -301,6 +305,13 @@ function nql:perceive(reward, rawstate, terminal, testing, testing_ep)
     -- Preprocess state (will be set to nil if terminal)
     local state = self:preprocess(rawstate):float()
     local curState
+
+    -- a.kadurin --
+    self.session_reward = self.session_reward + reward
+    if terminal then
+        reward = -self.session_reward/2
+    end
+    -- a.kadurin --
 
     if self.max_reward then
         reward = math.min(reward, self.max_reward)
