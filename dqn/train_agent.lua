@@ -84,7 +84,7 @@ local screen, reward, terminal = game_env:getState()
 print("Iteration ..", step)
 local win = nil
 while step < opt.steps do
-    --[[step = step + 1
+    step = step + 1
     local action_index = agent:perceive(reward, screen, terminal)
 
     -- game over? get next game!
@@ -109,7 +109,7 @@ while step < opt.steps do
         collectgarbage()
     end
 
-    if step%1000 == 0 then collectgarbage() end]]
+    if step%1000 == 0 then collectgarbage() end
 
     if step % opt.eval_freq == 0 and step > learn_start then
 
