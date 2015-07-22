@@ -1,0 +1,18 @@
+rock_manifest = {
+   ['cutorch-scm-1.rockspec'] = "07f55ca16852db5a7d1bc28c5967ddc4",
+   doc = {
+      LICENSE = "ca700793292417854ddbcfe77779f904",
+      ['README.md'] = "77f1e4e3b9c5cce154d2d930e7c46663"
+   },
+   lib = {
+      ['libcutorch.so'] = "711c999b691aabce43ca10baf2852cba"
+   },
+   lua = {
+      cutorch = {
+         ['FFI.lua'] = "68df6a47c512538c9e04d0a3c99526da",
+         ['Tensor.lua'] = "dea10f2c6de5d7ca67fb3beca2d23ab5",
+         ['init.lua'] = "1f8ba6f819e3ed5711fa1acf5c8ca95a",
+         ['test.lua'] = "078efb640a1d579864f75be1a478faee"
+      }
+   }
+}
