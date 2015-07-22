@@ -2,4 +2,4 @@
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-./run_gpu tutankham $BRANCH > ../logs/$BRANCH.log
+./run_gpu $1 $BRANCH > ../logs/$BRANCH-$1.log

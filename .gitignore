@@ -1,0 +1,5 @@
+torch/**/*
+big-negative-reward-tutankham
+master-tutankham
+negative-reward-tutankham
+*.t7
