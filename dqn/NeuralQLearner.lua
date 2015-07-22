@@ -302,6 +302,12 @@ function nql:perceive(reward, rawstate, terminal, testing, testing_ep)
     local state = self:preprocess(rawstate):float()
     local curState
 
+    -- a.kadurin --
+    if terminal then
+        reward = self.min_reward
+    end
+    -- a.kadurin --
+
     if self.max_reward then
         reward = math.min(reward, self.max_reward)
     end
