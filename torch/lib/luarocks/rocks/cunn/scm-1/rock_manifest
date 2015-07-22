@@ -1,0 +1,18 @@
+rock_manifest = {
+   ['cunn-scm-1.rockspec'] = "29dc07697ce93686d07565e0846dfb19",
+   doc = {
+      ['cunnmodules.md'] = "7688827da23a9f54657024d9208bb6eb"
+   },
+   lib = {
+      ['libcunn.so'] = "6602940d37959d0f88589fd169e1322e"
+   },
+   lua = {
+      cunn = {
+         ['DataParallelTable.lua'] = "f1f321ba1d35132db71eeb254da8fba1",
+         ['benchmark.lua'] = "d41d8cd98f00b204e9800998ecf8427e",
+         ['init.lua'] = "1a5624a67868d9e1dc8342f78a37be72",
+         ['test.lua'] = "51d62ee9b6103e937057e1142896636f",
+         ['test_DataParallelTable.lua'] = "73aaf3f24d851bdbfa1298fbd6548b09"
+      }
+   }
+}
