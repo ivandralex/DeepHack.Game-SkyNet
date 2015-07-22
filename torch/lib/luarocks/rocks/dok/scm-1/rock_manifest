@@ -1,9 +1,0 @@
-rock_manifest = {
-   ['dok-scm-1.rockspec'] = "c34026a282aeaacc0772fb2876749403",
-   lua = {
-      dok = {
-         ['init.lua'] = "0a31a2ea04f2410fc77edbead6af0248",
-         ['inline.lua'] = "4289dad83cfc924fa0c42215e96460bb"
-      }
-   }
-}
