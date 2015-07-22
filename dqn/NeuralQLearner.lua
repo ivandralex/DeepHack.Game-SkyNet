@@ -4,10 +4,14 @@ Copyright (c) 2014 Google Inc.
 See LICENSE file for full terms of limited license.
 ]]
 
+require 'math'
+require 'utils'
+require 'os'
 if not dqn then
     require 'initenv'
 end
 
+math.randomseed(os.time())
 local nql = torch.class('dqn.NeuralQLearner')
 
 
@@ -63,6 +67,17 @@ function nql:__init(args)
     self.transition_params = args.transition_params or {}
 
     self.network    = args.network or self:createNetwork()
+
+    -- a.kadurin action dropout options --
+
+    self.num_actions_to_drop = 5
+    self.actions_to_drop = {}
+    self.drop_flag = false
+    self.drop_length = 100
+    self.drop_freq = 1000
+    self.drop_steps = 0
+
+    -- a.kadurin action dropout options --
 
     -- check whether there is a network file
     local network_function
@@ -392,6 +407,25 @@ function nql:greedy(state)
     local q = self.network:forward(state):float():squeeze()
     local maxq = q[1]
     local besta = {1}
+
+    -- a.kadurin dropout --
+    if self.numSteps % self.drop_freq == 0 then
+        self.drop_flag = true
+        self.drop_steps = 0
+        self.actions_to_drop = utils.lotto(self.num_actions_to_drop, 18)
+    end
+
+    if self.drop_flag then
+        if self.drop_steps < self.drop_length then
+            self.drop_steps = self.drop_steps + 1
+            for i, a in pairs(self.actions_to_drop) do
+                maxq[a] = math.min(maxq[a], 0.0)
+            end
+        else
+            self.drop_flag = false
+        end
+    end
+    -- a.kadurin dropout --
 
     -- Evaluate all other actions (with random tie-breaking)
     for a = 2, self.n_actions do
